@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Video Streaming</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Live Video Streaming</h1>
+    <div>
+        <img id="video-stream" width="50%" height="500px"/>
+        <button id="start-stream">Start Stream</button>
+        <button id="stop-stream">Stop Stream</button>
+    </div>
+    <script>
+        $(document).ready(function() {
+            var video = document.getElementById('video-stream');
+            var streamActive = false;
+
+            $("#start-stream").click(function() {
+                if (!streamActive) {
+                    video.src = "{{ url_for('video_feed') }}";
+                    streamActive = true;
+                }
+            });
+
+            $("#stop-stream").click(function() {
+                if (streamActive) {
+                    video.src = "";
+                    streamActive = false;
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url_for('stop_stream') }}",
+                        success: function(data) {
+                            console.log("Stream stopped");
+                        },
+                        error: function() {
+                            console.log("Error stopping stream");
+                        }
+                    });
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
